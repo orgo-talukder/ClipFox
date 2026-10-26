@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Clipfox",
   "short_name": "Clipfox",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "description": "Find and extract YouTube links from any webpage.",
   "minimum_chrome_version": "102",
   "permissions": [

@@ -78,6 +78,18 @@
       tabUrl: 'https://news.example.com/design-inspiration',
       fixture: DEFAULT_FIXTURE
     },
+    allFilter: {
+      label: 'Saved default filter - All',
+      tabUrl: 'https://news.example.com/design-inspiration',
+      fixture: DEFAULT_FIXTURE,
+      settings: { defaultFilter: 'all' }
+    },
+    videoBadge: {
+      label: 'Video-only toolbar count',
+      tabUrl: 'https://news.example.com/design-inspiration',
+      fixture: DEFAULT_FIXTURE,
+      settings: { badgeCountMode: 'video' }
+    },
     empty: {
       label: 'No links',
       tabUrl: 'https://news.example.com/quiet-page',
@@ -124,6 +136,24 @@
       fixture: WATCH_FIXTURE_A,
       settings: { autoWatch: true }
     },
+    watch5: {
+      label: 'Watch interval - 5 seconds',
+      tabUrl: 'https://course.example.com/class/live',
+      fixture: WATCH_FIXTURE_A,
+      settings: { autoWatch: true, watchIntervalMs: 5000 }
+    },
+    watch10: {
+      label: 'Watch interval - 10 seconds',
+      tabUrl: 'https://course.example.com/class/live',
+      fixture: WATCH_FIXTURE_A,
+      settings: { autoWatch: true, watchIntervalMs: 10000 }
+    },
+    watchIntervalUpdate: {
+      label: 'Watch interval updates while running',
+      tabUrl: 'https://course.example.com/class/live',
+      fixture: WATCH_FIXTURE_A,
+      settings: { autoWatch: true, watchIntervalMs: 10000, changeWatchInterval: true }
+    },
     settings: {
       label: 'Saved settings - Markdown, no badge',
       tabUrl: 'https://news.example.com/design-inspiration',
@@ -138,7 +168,10 @@
   var storageData = Object.assign({
     defaultCopyFormat: 'urls',
     autoWatch: false,
-    showBadge: true
+    showBadge: true,
+    defaultFilter: 'video',
+    badgeCountMode: 'all',
+    watchIntervalMs: 3000
   }, definition.settings || {});
   var storageListeners = [];
 
@@ -286,7 +319,7 @@
       },
       runtime: {
         getManifest: function () {
-          return { manifest_version: 3, name: 'Clipfox', version: '1.4.0' };
+          return { manifest_version: 3, name: 'Clipfox', version: '1.4.1' };
         },
         openOptionsPage: function () {
           mock.openOptionsCalls++;
@@ -409,6 +442,20 @@
       }
     }
 
+    if (scenario === 'allFilter') {
+      var allFilter = doc.querySelector('#filters button[data-filter="all"]');
+      if (!allFilter || allFilter.getAttribute('aria-pressed') !== 'true') {
+        throw new Error('Saved All filter was not applied after scan.');
+      }
+      if (doc.querySelectorAll('#results .result').length !== 8) {
+        throw new Error('All filter should show all 8 fixture links.');
+      }
+    }
+
+    if (scenario === 'videoBadge' && mock.badges['7'] !== '5') {
+      throw new Error('Video-only badge should count 5 video/Short/live links, received ' + JSON.stringify(mock.badges['7']));
+    }
+
     if (scenario === 'default') {
       if (mock.badges['7'] !== '8') {
         throw new Error('Badge should show 8 links, received ' + JSON.stringify(mock.badges['7']));
@@ -425,7 +472,8 @@
       }
     }
 
-    if (scenario === 'watch' || scenario === 'watchAuto') {
+    if (scenario === 'watch' || scenario === 'watchAuto' || scenario === 'watch5' ||
+        scenario === 'watch10' || scenario === 'watchIntervalUpdate') {
       var urls = popupUrls(doc);
       if (!urls.some(function (url) { return url.indexOf('WatchVid002') !== -1; })) {
         throw new Error('Watch mode did not refresh to the new player.');
@@ -515,16 +563,25 @@
       await delay(150);
     }
 
-    if (scenario === 'watch' || scenario === 'watchAuto') {
+    if (scenario === 'watch' || scenario === 'watchAuto' || scenario === 'watch5' ||
+        scenario === 'watch10' || scenario === 'watchIntervalUpdate') {
       if (scenario === 'watch') {
         var watchButton = popupFrame.contentDocument.getElementById('watch-btn');
         if (watchButton) watchButton.click();
       }
       await delay(350);
+      if (scenario === 'watchIntervalUpdate') {
+        var oldInterval = storageData.watchIntervalMs;
+        storageData.watchIntervalMs = 3000;
+        notifyStorage({ watchIntervalMs: { oldValue: oldInterval, newValue: 3000 } }, 'sync');
+      }
       await loadFrame(fixtureFrame, WATCH_FIXTURE_B);
       mock.watchFixtureChanges++;
-      // The popup polls every 3 seconds. Give it one full cycle plus scan time.
-      await delay(3900);
+      // Give the configured polling interval one full cycle plus scan time.
+      var interval = scenario === 'watchIntervalUpdate'
+        ? storageData.watchIntervalMs
+        : Number(definition.settings && definition.settings.watchIntervalMs);
+      await delay(Math.max(3900, interval + 900 || 3900));
     }
 
     checkExpectations(popupFrame);

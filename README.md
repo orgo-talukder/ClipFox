@@ -160,11 +160,14 @@ Open Settings from the popup footer or the extensions page. The page is a normal
 
 | Setting | Default | Effect |
 | --- | --- | --- |
-| **Default format** | URLs | Format used by Copy all, Copy N, and Export |
+| **Default results** | Videos | Opens each new scan on playable videos, Shorts, and live streams; choose All links to include every category |
+| **Default copy format** | URLs | Format used by Copy all, Copy N, and Export |
 | **Start Watch automatically** | Off | Starts Watch after a successful scan |
+| **Check for player changes** | Every 3 seconds | Sets the Watch check interval to 3, 5, or 10 seconds |
 | **Show link count on the toolbar icon** | On | Enables the per-tab badge |
+| **Badge count** | All YouTube links | Shows either all extracted links or only videos, Shorts, and live streams |
 
-Settings are stored in `chrome.storage.sync` with safe defaults. If sync is unavailable or a sync write fails, the extension falls back to `chrome.storage.local` and reports that it saved locally; if storage is unavailable entirely, it keeps working with defaults and shows an explanation on the Settings page. **Reset to defaults** restores all three settings.
+Settings are stored in `chrome.storage.sync` with safe defaults. Change one or more preferences, then select **Save changes** to apply them; **Cancel** discards edits, while **Reset defaults** stages the default values until you save. If sync is unavailable or a sync write fails, the extension falls back to `chrome.storage.local` and reports that it saved locally. If storage cannot be read, the controls stay disabled and offer a retry. Changing the badge count mode clears existing counts; each tab shows the new count after its next scan.
 
 ---
 
@@ -210,7 +213,7 @@ Tracking and navigation parameters such as `si`, `feature`, `t`, `pp`, `utm_*`, 
 | `activeTab` | Grants temporary access to the current tab only after you click the extension. There is no persistent all-sites access. |
 | `scripting` | Injects the read-only scanner and the lightweight player probe into that tab. |
 | `clipboardWrite` | Supports copying selected links to the clipboard. |
-| `storage` | Saves your copy format, Watch preference, and badge preference. Settings use `chrome.storage.sync` with a local fallback. |
+| `storage` | Saves your copy format, result filter, Watch preferences, and badge preferences. Settings use `chrome.storage.sync` with a local fallback. |
 
 There are **no host permissions** and no `tabs`, `webRequest`, `cookies`, `downloads`, `history`, or analytics permissions. The background service worker is declared only for badge cleanup.
 
@@ -224,7 +227,7 @@ What Clipfox does **not** do:
 - Page content stays in the browser; only extracted URLs, titles, counts, and scan statistics are returned to the popup.
 - Clipboard writes happen only when you press a copy button. Opening a link happens only when you press an open button. Export happens only when you press **Export**.
 
-`chrome.storage.sync` is managed by the browser. If you have browser sync enabled, your three preferences may sync between your signed-in browsers like other extension settings. Clipfox itself never sends them anywhere.
+`chrome.storage.sync` is managed by the browser. If you have browser sync enabled, your six preferences may sync between your signed-in browsers like other extension settings. Clipfox itself never sends them anywhere.
 
 ---
 
@@ -393,7 +396,7 @@ Reload Clipfox on `chrome://extensions` / `edge://extensions` / `brave://extensi
 - Microsoft Edge 102+ (Chromium)
 - Brave and other Chromium browsers that support Manifest V3, `chrome.scripting`, and `chrome.storage` may work.
 
-The automated harnesses were re-run in headless Chrome 156.0.8078.48 on 2026-10-25. A real Chrome, Edge, and Brave installation still needs the manual checks in [TESTING.md](TESTING.md).
+The automated harnesses were re-run in headless Chrome on 2026-10-26. A real Chrome, Edge, and Brave installation still needs the manual checks in [TESTING.md](TESTING.md).
 
 ---
 
@@ -402,10 +405,10 @@ The automated harnesses were re-run in headless Chrome 156.0.8078.48 on 2026-10-
 The extraction logic, popup behavior, settings page, and background badge cleanup were exercised with automated browser harnesses. As of this build:
 
 - Extraction: **10/10** groups pass.
-- Popup UI: **12/12** harness scenarios pass, including main-video pinning, Watch, auto-Watch, saved settings, and a sync-write fallback to local storage.
-- Settings: **5/5** checks pass.
+- Popup UI: existing scenarios plus filter, badge mode, and Watch interval checks pass, including main-video pinning, Watch, auto-Watch, saved settings, and a sync-write fallback to local storage.
+- Settings: **14/14** checks pass, including draft/save/cancel/reset, new preferences, local fallback, and failed-save recovery.
 - Background worker: **8/8** checks pass.
-- Clipfox visual identity, local font loading, popup states, and the Settings page were inspected at the real popup size.
+- Clipfox visual identity, local font loading, popup states, and the Settings page were inspected; the Settings page has no horizontal overflow from 360 to 1,000 px.
 - Real unpacked installation, toolbar clicks, OS clipboard, downloads, and the Udvash class page still need the manual checks in [TESTING.md](TESTING.md).
 
-Version **1.4.0** is the Clipfox rebrand. It introduces the new fox/link mark, local Space Grotesk wordmark and font, refreshed popup and Settings page, violet toolbar badge, and Clipfox export filenames. Extraction, click-to-scan, Watch mode, copy formats, export, and the privacy model are unchanged.
+Version **1.4.0** introduced the Clipfox rebrand: the fox/link mark, local Space Grotesk wordmark and font, refreshed popup and Settings page, violet toolbar badge, and Clipfox export filenames. Version **1.4.1** updates the Settings experience and adds configurable default filtering, badge counts, and Watch intervals. Extraction, click-to-scan, copy formats, export, and the privacy model remain unchanged.

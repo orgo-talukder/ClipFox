@@ -3,9 +3,9 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Find and extract YouTube links from any webpage.">
+  <meta name="description" content="Customize how Clipfox finds and shares YouTube links.">
   <meta name="theme-color" content="#0b0e14">
-  <title>Clipfox settings</title>
+  <title>Clipfox Settings</title>
   <link rel="icon" href="icons/icon32.png">
   <link rel="preload" href="fonts/SpaceGrotesk-Variable.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="options.css">
@@ -20,99 +20,170 @@
           <p class="kicker">YouTube Link Extractor</p>
         </div>
       </div>
-      <span class="version" id="version">v1.4.0</span>
+      <span class="version" id="version">v1.4.1</span>
       <div class="hero-copy">
+        <p class="eyebrow">Personalize your workflow</p>
         <h1>Settings</h1>
-        <p class="lede">Find the links. Clip the clutter. Choose how Clipfox copies links, watches player changes, and reports counts in your toolbar.</p>
+        <p id="settings-intro" class="lede">Choose how Clipfox filters results, formats copied links, and watches for player changes.</p>
       </div>
     </header>
 
-    <main class="settings">
-      <section class="card" aria-labelledby="copy-heading">
-        <div class="card-head">
+    <main id="settings-form" class="settings" aria-describedby="settings-intro">
+      <section class="settings-group" aria-labelledby="results-group-heading">
+        <div class="group-heading">
+          <span class="group-index" aria-hidden="true">01</span>
           <div>
-            <h2 id="copy-heading">Copy format</h2>
-            <p>Used by <strong>Copy all</strong>, <strong>Copy N</strong>, and <strong>Export</strong>. Per-card copy always copies that card's URL.</p>
+            <h2 id="results-group-heading">Results &amp; Copy</h2>
+            <p>Set the results Clipfox opens with and the format it uses when sharing links.</p>
           </div>
-          <span class="tag">Output</span>
         </div>
-        <div class="field">
-          <label for="copy-format">Default format</label>
-          <select id="copy-format" class="select">
-            <option value="urls">URLs — one per line</option>
-            <option value="title-url">Title + URL — readable list</option>
-            <option value="markdown">Markdown — linked list</option>
-            <option value="csv">CSV — spreadsheet ready</option>
-            <option value="json">JSON — structured data</option>
-            <option value="ids">Video IDs — one per line</option>
-          </select>
-        </div>
-        <p class="hint" id="format-hint">Plain URLs, one per line. Video IDs mode skips playlists and channels.</p>
-      </section>
-
-      <section class="card" aria-labelledby="watch-heading">
-        <div class="card-head">
-          <div>
-            <h2 id="watch-heading">Watching</h2>
-            <p>Watch mode checks the embedded player every few seconds while the popup is open and refreshes the results when the player changes.</p>
+        <div class="card">
+          <div class="field-row">
+            <div class="field-copy">
+              <label for="default-filter">Default results</label>
+              <p class="field-help">Choose which links appear first after each scan.</p>
+            </div>
+            <select id="default-filter" class="select" disabled>
+              <option value="video">Videos</option>
+              <option value="all">All links</option>
+            </select>
           </div>
-          <span class="tag tag-green">Live</span>
-        </div>
-        <label class="switch-row" for="auto-watch">
-          <span class="switch-copy">
-            <span class="switch-title">Start Watch automatically</span>
-            <span class="switch-note">Turns on after a successful scan. You can still stop it with the Watch button.</span>
-          </span>
-          <input id="auto-watch" class="switch-input" type="checkbox">
-          <span class="switch-ui" aria-hidden="true"></span>
-        </label>
-      </section>
-
-      <section class="card" aria-labelledby="badge-heading">
-        <div class="card-head">
-          <div>
-            <h2 id="badge-heading">Toolbar badge</h2>
-            <p>The badge shows how many YouTube links were found on the last scanned tab. It clears when that tab navigates or closes.</p>
+          <div class="field-row">
+            <div class="field-copy">
+              <label for="copy-format">Default copy format</label>
+              <p class="field-help">Used by Copy all, Copy N, and Export. Per-card copy always copies its URL.</p>
+            </div>
+            <select id="copy-format" class="select" disabled>
+              <option value="urls">URLs — one per line</option>
+              <option value="title-url">Title + URL — readable list</option>
+              <option value="markdown">Markdown — linked list</option>
+              <option value="csv">CSV — spreadsheet ready</option>
+              <option value="json">JSON — structured data</option>
+              <option value="ids">Video IDs — one per line</option>
+            </select>
           </div>
-          <span class="tag">Icon</span>
-        </div>
-        <label class="switch-row" for="show-badge">
-          <span class="switch-copy">
-            <span class="switch-title">Show link count on the toolbar icon</span>
-            <span class="switch-note">Turning this off clears badges from open tabs.</span>
-          </span>
-          <input id="show-badge" class="switch-input" type="checkbox">
-          <span class="switch-ui" aria-hidden="true"></span>
-        </label>
-      </section>
-
-      <section class="card shortcut" aria-labelledby="shortcut-heading">
-        <div>
-          <h2 id="shortcut-heading">Keyboard shortcut</h2>
-          <p>Open the popup with <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>Y</kbd> (or <kbd>Command</kbd> + <kbd>Shift</kbd> + <kbd>Y</kbd> on macOS). Change it on your browser's extension shortcuts page.</p>
+          <p class="hint" id="format-hint">Plain URLs, one per line. Video IDs mode skips playlists and channels.</p>
         </div>
       </section>
 
-      <section class="card privacy" aria-labelledby="privacy-heading">
-        <div class="card-head">
+      <section class="settings-group" aria-labelledby="automation-group-heading">
+        <div class="group-heading">
+          <span class="group-index" aria-hidden="true">02</span>
           <div>
-            <h2 id="privacy-heading">Privacy</h2>
-            <p>Clipfox is deliberately boring about data: it stays inside your browser.</p>
+            <h2 id="automation-group-heading">Automation</h2>
+            <p>Control how Clipfox follows a changing embedded player.</p>
           </div>
-          <span class="tag tag-blue">Local</span>
         </div>
-        <ul class="privacy-list">
-          <li>No network requests, analytics, or remote code.</li>
-          <li>No host permissions. A page is read only after you press <strong>Scan this page</strong>.</li>
-          <li>Settings use <code>chrome.storage.sync</code>, so your browser account may sync them like other extension preferences.</li>
-          <li>Clipfox never downloads videos, touches cookies, or bypasses private or unlisted access.</li>
-        </ul>
+        <div class="card">
+          <label class="switch-row" for="auto-watch">
+            <span class="switch-copy">
+              <span class="switch-title">Start Watch automatically</span>
+              <span class="switch-note">Starts after a successful scan. You can stop Watch from the popup at any time.</span>
+            </span>
+            <input id="auto-watch" class="switch-input" type="checkbox" disabled>
+            <span class="switch-ui" aria-hidden="true"></span>
+          </label>
+          <div class="field-row field-row-nested">
+            <div class="field-copy">
+              <label for="watch-interval">Check for player changes</label>
+              <p class="field-help">Applies whenever Watch is active. Longer intervals make fewer checks.</p>
+            </div>
+            <select id="watch-interval" class="select" disabled>
+              <option value="3000">Every 3 seconds</option>
+              <option value="5000">Every 5 seconds</option>
+              <option value="10000">Every 10 seconds</option>
+            </select>
+          </div>
+        </div>
+      </section>
+
+      <section class="settings-group" aria-labelledby="toolbar-group-heading">
+        <div class="group-heading">
+          <span class="group-index" aria-hidden="true">03</span>
+          <div>
+            <h2 id="toolbar-group-heading">Toolbar</h2>
+            <p>Choose whether the extension icon displays a result count.</p>
+          </div>
+        </div>
+        <div class="card">
+          <label class="switch-row" for="show-badge">
+            <span class="switch-copy">
+              <span class="switch-title">Show link count on the toolbar icon</span>
+              <span class="switch-note">The count clears when a tab navigates or closes.</span>
+            </span>
+            <input id="show-badge" class="switch-input" type="checkbox" disabled>
+            <span class="switch-ui" aria-hidden="true"></span>
+          </label>
+          <div class="field-row field-row-nested" id="badge-mode-row">
+            <div class="field-copy">
+              <label for="badge-count-mode">Count</label>
+              <p class="field-help" id="badge-mode-help">Changing this clears existing counts; each tab gets a new count after its next scan.</p>
+            </div>
+            <select id="badge-count-mode" class="select" aria-describedby="badge-mode-help" disabled>
+              <option value="all">All YouTube links</option>
+              <option value="video">Videos, Shorts &amp; live</option>
+            </select>
+          </div>
+        </div>
+      </section>
+
+      <section class="settings-group" aria-labelledby="shortcuts-group-heading">
+        <div class="group-heading">
+          <span class="group-index" aria-hidden="true">04</span>
+          <div>
+            <h2 id="shortcuts-group-heading">Shortcuts</h2>
+            <p>Open Clipfox without reaching for the toolbar.</p>
+          </div>
+        </div>
+        <div class="card shortcut-card">
+          <div class="shortcut-copy">
+            <h3>Open the popup</h3>
+            <p>Use the browser's extension shortcuts page to change this key combination.</p>
+          </div>
+          <div class="shortcut-keys" aria-label="Control plus Shift plus Y, or Command plus Shift plus Y on Mac">
+            <kbd>Ctrl</kbd><span>+</span><kbd>Shift</kbd><span>+</span><kbd>Y</kbd>
+            <span class="shortcut-mac">Mac: <kbd>⌘</kbd> <kbd>Shift</kbd> <kbd>Y</kbd></span>
+          </div>
+        </div>
+      </section>
+
+      <section class="settings-group" aria-labelledby="privacy-group-heading">
+        <div class="group-heading">
+          <span class="group-index" aria-hidden="true">05</span>
+          <div>
+            <h2 id="privacy-group-heading">Privacy &amp; About</h2>
+            <p>What Clipfox reads, stores, and keeps off your device.</p>
+          </div>
+        </div>
+        <div class="card privacy-card">
+          <div class="privacy-intro">
+            <span class="privacy-icon" aria-hidden="true">✓</span>
+            <div>
+              <h3>Private by design</h3>
+              <p>Clipfox works on demand and keeps page content in your browser.</p>
+            </div>
+          </div>
+          <ul class="privacy-list">
+            <li>No network requests, analytics, or remote code.</li>
+            <li>No host permissions. A page is read only after you select <strong>Scan this page</strong>.</li>
+            <li>Preferences use browser storage and may sync with your browser account.</li>
+            <li>Clipfox does not download videos, access cookies, or bypass private or unlisted access.</li>
+          </ul>
+        </div>
       </section>
     </main>
 
-    <footer class="footer">
-      <button id="reset-btn" class="btn btn-secondary" type="button">Reset to defaults</button>
-      <span id="save-status" class="save-status" role="status" aria-live="polite">Saved</span>
+    <footer class="save-bar" aria-label="Settings actions">
+      <div class="save-copy">
+        <span id="save-status" class="save-status" role="status" aria-live="polite">Loading settings…</span>
+        <span id="save-detail" class="save-detail">Your changes are saved only when you select Save changes.</span>
+      </div>
+      <div class="save-actions">
+        <button id="reset-btn" class="btn btn-quiet" type="button" disabled>Reset defaults</button>
+        <button id="cancel-btn" class="btn btn-secondary" type="button" disabled>Cancel</button>
+        <button id="retry-btn" class="btn btn-secondary" type="button" hidden>Retry loading</button>
+        <button id="save-btn" class="btn btn-primary" type="button" disabled>Save changes</button>
+      </div>
     </footer>
   </div>
 

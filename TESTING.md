@@ -1,6 +1,6 @@
 # Testing
 
-Last verified: **2026-10-25** (Clipfox **1.4.0**)
+Last verified: **2026-10-26** (Clipfox **1.4.1**)
 
 ## Status at a glance
 
@@ -25,11 +25,12 @@ Last verified: **2026-10-25** (Clipfox **1.4.0**)
 | Toolbar badge and settings suppression | UI harness + options harness | **PASS** |
 | Local storage fallback when sync writes fail | UI harness browser evaluation | **PASS** |
 | Diagnostics JSON copy | UI harness `error` / `restricted` scenarios | **PASS** |
-| Settings page | Options harness, 5 checks | **PASS — 5/5** |
+| Settings page | Options harness, 14 checks | **PASS — 14/14** |
+| New popup filter, badge mode, and Watch intervals | UI harness scenarios | **PASS — all listed scenarios** |
 | Background badge cleanup | Background harness, 8 checks | **PASS — 8/8** |
 | Clipfox mark, wordmark, icons, and local font | Visual inspection + browser font check | **PASS — visual** |
 | Popup state screenshots at 400 × 588 | Visual inspection | **PASS — visual** |
-| Settings page at 760 px and 1,000 px | Visual inspection | **PASS — visual** |
+| Settings page at 360, 600, 760, and 1,000 px | Browser viewport and overflow checks; visual inspection at 1,000 px | **PASS — responsive** |
 | Real unpacked extension install and toolbar click | Chrome/Edge/Brave extensions page | **NOT RUN** |
 | Real clipboard contents in the OS | Manual | **NOT RUN** |
 | Real `chrome.tabs.create` tab opening | Manual | **NOT RUN** |
@@ -54,7 +55,7 @@ The extraction, popup, settings, and background code are well covered by harness
 | Server | `python -m http.server 8123` (Python 3.15.1) |
 | Test origin | `http://127.0.0.1:8123` |
 | Extension package | `yt-link-extractor/` |
-| Manifest | Manifest V3, version **1.4.0** |
+| Manifest | Manifest V3, version **1.4.1** |
 | Brand | Clipfox fox/link mark, local Space Grotesk wordmark, bundled variable WOFF2 |
 
 The tests were run against files served over HTTP, not from `file://`, because the harnesses need `fetch` to load fixtures and popup assets. The popup harness uses `<base href="../">` inside its `srcdoc` iframe so the local `brand/` and `fonts/` assets resolve correctly.
@@ -296,7 +297,7 @@ The options page uses the same primary-then-local save pattern, but that page's 
 - Page strip: `Protected page`, time `Blocked`.
 - State panel: **"This page can't be read"** with the protected-page explanation.
 - No retry action was shown, because retrying a protected browser page cannot succeed.
-- **Copy diagnostics** was visible. Clicking it copied valid JSON with `extension: "Clipfox"`, `version: "1.4.0"`, `scannerVersion: "1.1.0"`, `phase: restricted`, and page context.
+- **Copy diagnostics** was visible. Clicking it copied valid JSON with `extension: "Clipfox"`, `version: "1.4.1"`, `scannerVersion: "1.1.0"`, `phase: restricted`, and page context.
 - Footer: "This page is protected by the browser."
 - Badge was empty.
 - The state panel is vertically centered in the results area.
@@ -305,7 +306,7 @@ The options page uses the same primary-then-local save pattern, but that page's 
 
 - The popup showed **"The page can't be accessed"**.
 - The **"Try again"** action was present because this failure is retryable.
-- **Copy diagnostics** was visible and copied valid JSON with `extension: "Clipfox"`, `version: "1.4.0"`, `scannerVersion: "1.1.0"`, the page URL, title, phase, error details, watch state, settings, and browser string.
+- **Copy diagnostics** was visible and copied valid JSON with `extension: "Clipfox"`, `version: "1.4.1"`, `scannerVersion: "1.1.0"`, the page URL, title, phase, error details, watch state, settings, and browser string.
 - Footer: "Access to this page was denied."
 - The page host still showed `news.example.com` rather than an unrelated "protected page" label.
 - Badge was empty.
@@ -350,25 +351,29 @@ The mock injection was delayed to expose the loading UI for inspection. The harn
 
 **Page:** `http://127.0.0.1:8123/tests/options-harness.html`
 
-**Recorded result:** **5 of 5 checks passed, 0 failed.**
+**Recorded result:** **14 of 14 checks passed, 0 failed.**
 
-The harness loads the real `options.html`, `options.css`, and `options.js` in an iframe with a mocked `chrome.storage.sync`, `chrome.tabs.query`, and `chrome.action.setBadgeText`. It does not reimplement the settings logic.
+The harness loads the real `options.html`, `options.css`, and `options.js` in an iframe with mocked sync/local storage, tab query, and toolbar badge APIs. It does not reimplement the settings logic.
 
 ### Checks
 
-1. **Settings load with defaults** — copy format `urls`, auto-watch off, show-badge on, controls enabled.
-2. **Copy format change saves** — selecting `json` writes `defaultCopyFormat: "json"` to storage.
-3. **Auto-watch saves** — toggling the switch writes `autoWatch: true`.
-4. **Badge preference saves and clears badges** — toggling show-badge off writes `showBadge: false` and calls `setBadgeText({ text: '' })` for both mocked tabs (two clear writes).
-5. **Reset restores defaults** — the reset button restores `urls`, `false`, and `true` in storage and in the form controls.
+Coverage includes loading legacy settings with new defaults, load retry, draft/save/cancel/reset behavior, all new preferences, badge clearing after a saved preference change, sync-to-local fallback, failed-save draft preservation and retry/cancel recovery. Reset stages defaults until saved; a badge clear is reported when it occurs.
 
 ### Also observed
 
-- The version pill read **`v1.4.0`** from the mocked manifest.
+- The version pill read **`v1.4.1`** from the mocked manifest.
 - The Clipfox lockup (fox mark + wordmark) and the supporting line rendered correctly.
 - The format hint updated when the format changed.
-- The save status showed **Saved** after each successful write.
-- When opened directly over HTTP without extension APIs, the page showed a disabled preview state: **"Open this page from the extension to change settings."** This is the intended graceful fallback.
+- Save, unsaved, error, local-only, and reset status messaging was checked.
+- When settings cannot be loaded, controls remain disabled and offer a retry.
+
+### Popup preference scenarios
+
+The UI harness verified the default **Videos** filter, configured **All** filter, **Videos only** badge count, and Watch intervals of 3, 5, and 10 seconds. It also verified that changing the interval while Watch is active reschedules the next check.
+
+### Responsive and accessibility checks
+
+At 360, 600, 760, and 1,000 px, the page had no horizontal overflow. Keyboard focus visibility, live status announcements, and reduced-motion handling were reviewed; the settings page was visually inspected at 1,000 px. Real Chrome sync and toolbar behavior remain manual checks below.
 
 ---
 
@@ -504,10 +509,10 @@ Run these after loading the unpacked extension. Record pass/fail and the browser
 | M17 | Export | Select JSON, click Export; repeat with Markdown and CSV | A file downloads with a `host-clipfox-YYYY-MM-DD.ext` or `clipfox-YYYY-MM-DD.ext` name and the expected extension/content; no download permission prompt |
 | M18 | Watch mode | On a page whose embedded player changes, press Watch; change the player; keep the popup open | Results update within a few seconds; the old video disappears; footer starts with `Watching ·`; closing the popup stops polling |
 | M19 | Badge | Scan a page, check the toolbar icon; navigate the tab; close the tab | Violet badge shows the link count; clears on navigation; no stale badge on the next page |
-| M20 | Settings | Change format, auto-watch, and badge; reopen the popup; reload the extension; click Reset | Choices persist and apply; Reset restores URLs/off/on; badge-off clears open-tab badges |
+| M20 | Settings | Change each preference, save, cancel a draft, and reset; reopen the popup; reload the extension | Saved choices persist and apply; Cancel discards drafts; Reset restores URLs/off/on/Videos/All links/3 seconds after saving; badge changes clear old tab counts and rescan repopulates them |
 | M21 | Shortcut | Press `Ctrl+Shift+Y` / `Cmd+Shift+Y` | The popup opens; the shortcut can be changed on the browser's shortcuts page |
 | M22 | Udvash main video | Open the exact Udvash class page, click the action | The embedded class player is the first card, shows the violet **Main** badge, and copies as a normal `https://www.youtube.com/watch?v=...` link |
-| M23 | Diagnostics | On a restricted or error page, click **Copy diagnostics** and paste | Valid JSON with `extension: "Clipfox"`, extension version `1.4.0`, scanner version `1.1.0`, page context, scan state, watch state, settings, and browser string |
+| M23 | Diagnostics | On a restricted or error page, click **Copy diagnostics** and paste | Valid JSON with `extension: "Clipfox"`, extension version `1.4.1`, scanner version `1.1.0`, page context, scan state, watch state, settings, and browser string |
 | M24 | Brand and font | Check the toolbar icon, popup header, Settings page, and DevTools network log | Clipfox mark and wordmark render; Space Grotesk loads from the extension; no remote font or brand request |
 
 For M9: Chrome popups normally close when the page loses focus, so the stale hint is most useful for pages that reload themselves while the popup remains open. The harness verifies the listener logic directly.
@@ -526,17 +531,17 @@ python -m http.server 8123
 Then open:
 
 1. `http://127.0.0.1:8123/tests/test-runner.html` — expect **All 10 test groups passed**.
-2. `http://127.0.0.1:8123/tests/options-harness.html` — expect **5/5 checks passed**.
+2. `http://127.0.0.1:8123/tests/options-harness.html` — expect **14/14 checks passed**.
 3. `http://127.0.0.1:8123/tests/background-harness.html` — expect **8/8 checks passed**.
 4. `http://127.0.0.1:8123/tests/ui-harness.html?scenario=idle` — expect the ready screen, **Scan this page**, and 0 scan calls.
 5. `http://127.0.0.1:8123/tests/ui-harness.html?scenario=default` — the harness clicks Scan and expects 5 video cards, 5 chips/counts, the first card marked **Main**, badge `8`, and no harness error.
-6. Switch scenarios with the links at the top: `Ready - not scanned yet`, `No links`, `No videos - 3 other links`, `Restricted page`, `Injection error`, `Large page - 240 links`, `Slow scan - loading state`, `Main video pinned`, `Watch - player changes`, `Auto-watch setting`, `Saved settings - Markdown, no badge`.
+6. Switch scenarios with the links at the top, including default, all-links filter, video-only badge, 5-second Watch, 10-second Watch, and active Watch interval update scenarios.
 7. Add `&plain=1` to hide the harness chrome and inspect the popup at 400 × 588.
 8. Open `http://127.0.0.1:8123/brand/preview.html` to inspect the mark and wordmark at scale.
 
 The UI harness cache-busts its popup assets so edits to `popup.js`/`popup.css` are picked up after a refresh. `tests/test-runner.html` version-queries the test scripts. The Watch scenarios intentionally wait about 3.9 seconds for one 3-second polling cycle.
 
-The 2026-10-25 results in this document were recorded in headless Chrome 156.0.8078.48 over the DevTools Protocol. The same pages also run in a normal browser tab.
+The 2026-10-25 baseline results in this document were recorded in headless Chrome 156.0.8078.48 over the DevTools Protocol. The updated settings and preference scenarios were rerun on 2026-10-26. The same pages also run in a normal browser tab.
 
 ---
 
@@ -559,8 +564,10 @@ The 2026-10-25 results in this document were recorded in headless Chrome 156.0.8
 ## 10. Bottom line
 
 - **Extraction logic:** verified across 10 automated groups, including malformed input, dedupe, canonical URLs, plain text, large pages, embed-source precedence, and scanner/probe serialization.
-- **Popup behavior:** verified across all 12 harness scenarios and required states using the real popup assets with mocked browser APIs, including the Clipfox header, main-video pinning, copy formats, Clipfox export filenames, badge suppression, diagnostics version `1.4.0`, and Watch success/failure paths.
-- **Settings page:** 5/5 checks pass with the real settings assets, including the Clipfox lockup and version `1.4.0`.
+- **Popup behavior:** the 12 baseline harness scenarios and the updated filter, badge mode, and Watch interval scenarios were verified using the real popup assets with mocked browser APIs, including the Clipfox header, main-video pinning, copy formats, Clipfox export filenames, badge suppression, diagnostics version `1.4.1`, and Watch success/failure paths.
+- **Settings page:** 14/14 checks pass with the real settings assets, including legacy defaults, draft/save/cancel/reset, local fallback, save failure, and badge clearing. The version label reports `v1.4.1`.
+- **Popup preferences:** filter defaults/override, badge count mode, and 3/5/10-second Watch intervals pass in the UI harness.
+- **Responsive settings:** no horizontal overflow at 360, 600, 760, and 1,000 px; visual inspection at 1,000 px.
 - **Background worker:** 8/8 checks pass, including navigation/close badge clearing, the `#6f5df0` badge colour, and a no-network API source scan.
 - **Brand:** the final fox mark, wordmark variants, local Space Grotesk font, PNG icons, popup, and Settings page were visually inspected.
 - **Real extension installation and OS-level side effects:** still require the manual checks in section 7. They should be completed before publishing, especially M18 (Watch), M19 (badge), M22 (Udvash), and M24 (brand/font).

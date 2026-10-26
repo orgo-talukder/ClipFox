@@ -5,14 +5,17 @@
   var MAX_LINKS = 500;
   var RENDER_BATCH = 100;
   var SCAN_TIMEOUT_MS = 15000;
-  var WATCH_INTERVAL_MS = 3000;
+  var DEFAULT_WATCH_INTERVAL_MS = 3000;
   var WATCH_PROBE_TIMEOUT_MS = 5000;
   var SVG_NS = 'http://www.w3.org/2000/svg';
 
   var SETTINGS_DEFAULTS = {
     defaultCopyFormat: 'urls',
     autoWatch: false,
-    showBadge: true
+    showBadge: true,
+    defaultFilter: 'video',
+    badgeCountMode: 'all',
+    watchIntervalMs: DEFAULT_WATCH_INTERVAL_MS
   };
 
   var COPY_FORMATS = {
@@ -28,7 +31,7 @@
   // streams so the popup shows playable YouTube content only by default.
   var FILTER_ORDER = ['video', 'playlist', 'channel', 'other'];
   var VIDEO_CATEGORIES = { video: true, short: true, live: true };
-  var DEFAULT_FILTER = 'video';
+  var DEFAULT_FILTER = SETTINGS_DEFAULTS.defaultFilter;
 
   var CATEGORY_META = {
     video: { label: 'Video', filterLabel: 'Videos', fallbackTitle: 'YouTube video' },
@@ -71,7 +74,7 @@
   var byKey = new Map();
   var toastTimer = 0;
   var stateAction = 'rescan';
-  var badgeMemo = { tabId: null, text: null, show: null };
+  var badgeMemo = { tabId: null, text: null, show: null, mode: null };
   var badgeColorSet = false;
 
   // Declared before init() runs. popup.js is deferred, so init() executes
@@ -327,6 +330,9 @@
         if (changes.defaultCopyFormat) patch.defaultCopyFormat = changes.defaultCopyFormat.newValue;
         if (changes.autoWatch) patch.autoWatch = changes.autoWatch.newValue;
         if (changes.showBadge) patch.showBadge = changes.showBadge.newValue;
+        if (changes.defaultFilter) patch.defaultFilter = changes.defaultFilter.newValue;
+        if (changes.badgeCountMode) patch.badgeCountMode = changes.badgeCountMode.newValue;
+        if (changes.watchIntervalMs) patch.watchIntervalMs = changes.watchIntervalMs.newValue;
         if (Object.keys(patch).length) applySettings(patch, false);
       });
     } catch (error) {
@@ -362,16 +368,26 @@
         ? source.defaultCopyFormat
         : SETTINGS_DEFAULTS.defaultCopyFormat,
       autoWatch: source.autoWatch === true,
-      showBadge: source.showBadge !== false
+      showBadge: source.showBadge !== false,
+      defaultFilter: source.defaultFilter === 'all' ? 'all' : SETTINGS_DEFAULTS.defaultFilter,
+      badgeCountMode: source.badgeCountMode === 'video' ? 'video' : SETTINGS_DEFAULTS.badgeCountMode,
+      watchIntervalMs: [3000, 5000, 10000].indexOf(Number(source.watchIntervalMs)) !== -1
+        ? Number(source.watchIntervalMs)
+        : SETTINGS_DEFAULTS.watchIntervalMs
     };
   }
 
   function applySettings(raw, initial) {
+    var previousInterval = state.settings.watchIntervalMs;
     state.settings = normalizeSettings(Object.assign({}, state.settings, raw || {}));
     state.copyFormat = state.settings.defaultCopyFormat;
+    if (initial) state.filter = state.settings.defaultFilter;
     syncCopyFormatControl();
     renderControls();
     applyBadge();
+    if (!initial && state.watch.enabled && previousInterval !== state.settings.watchIntervalMs) {
+      scheduleWatchTick(state.settings.watchIntervalMs);
+    }
   }
 
   function syncCopyFormatControl() {
@@ -439,6 +455,10 @@
     }
   }
 
+  function watchInterval() {
+    return state.settings.watchIntervalMs || DEFAULT_WATCH_INTERVAL_MS;
+  }
+
   function startWatch(automatic) {
     if (state.watch.enabled) return;
     if (state.busy) return;
@@ -498,7 +518,7 @@
 
   async function watchTick() {
     if (!state.watch.enabled || state.busy || state.watch.probing) {
-      scheduleWatchTick(WATCH_INTERVAL_MS);
+      scheduleWatchTick(watchInterval());
       return;
     }
 
@@ -516,20 +536,20 @@
 
     if (!probe) {
       // A transient scripting failure should never wipe good results.
-      scheduleWatchTick(WATCH_INTERVAL_MS);
+      scheduleWatchTick(watchInterval());
       return;
     }
 
     var signature = probe.signature || '';
     if (state.watch.signature === null) {
       state.watch.signature = signature;
-      scheduleWatchTick(WATCH_INTERVAL_MS);
+      scheduleWatchTick(watchInterval());
       return;
     }
 
     if (signature !== state.watch.signature) {
       if (Date.now() < state.watch.nextAttemptAt) {
-        scheduleWatchTick(WATCH_INTERVAL_MS);
+        scheduleWatchTick(watchInterval());
         return;
       }
       var previousUrls = state.links.map(function (link) { return link.url; }).join('\n');
@@ -557,7 +577,7 @@
       }
     }
 
-    scheduleWatchTick(WATCH_INTERVAL_MS);
+    scheduleWatchTick(watchInterval());
   }
 
   async function probeCurrentPage() {
@@ -615,6 +635,7 @@
 
     state.busy = true;
     if (!silent) {
+      state.filter = state.settings.defaultFilter;
       state.phase = 'loading';
       state.error = null;
       state.stale = false;
@@ -1147,7 +1168,7 @@
 
   function clearFilters() {
     state.query = '';
-    state.filter = DEFAULT_FILTER;
+    state.filter = state.settings.defaultFilter;
     state.renderLimit = RENDER_BATCH;
     if (els.search.value) els.search.value = '';
     updateSearchClear();
@@ -1937,16 +1958,20 @@
     if (!badgingAvailable() || typeof state.tabId !== 'number') return;
 
     var show = state.settings.showBadge === true;
+    var mode = state.settings.badgeCountMode;
     var text = '';
     if (show && (state.phase === 'ready' || state.phase === 'empty')) {
-      var count = state.links.length;
+      var count = mode === 'video'
+        ? state.links.filter(function (link) { return !!VIDEO_CATEGORIES[link.category]; }).length
+        : state.links.length;
       text = count > 999 ? '999+' : String(count);
     }
 
-    if (badgeMemo.tabId === state.tabId && badgeMemo.text === text && badgeMemo.show === show) {
+    if (badgeMemo.tabId === state.tabId && badgeMemo.text === text &&
+        badgeMemo.show === show && badgeMemo.mode === mode) {
       return;
     }
-    badgeMemo = { tabId: state.tabId, text: text, show: show };
+    badgeMemo = { tabId: state.tabId, text: text, show: show, mode: mode };
     ensureBadgeColor();
 
     try {
