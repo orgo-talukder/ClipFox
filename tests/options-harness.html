@@ -1,0 +1,150 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Clipfox - Options Harness</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #0b0e14;
+      --panel: #121824;
+      --border: #222b3a;
+      --text: #eef1f6;
+      --muted: #96a0af;
+      --accent: #8b7bff;
+      --green: #45d6a0;
+      --mono: ui-monospace, "Cascadia Mono", Consolas, monospace;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      padding: 26px 28px 40px;
+      background:
+        radial-gradient(900px 460px at 88% -10%, rgba(139, 123, 255, 0.08), transparent 60%),
+        var(--bg);
+      color: var(--text);
+      font: 13px/1.55 "Segoe UI Variable Text", "Segoe UI", system-ui, sans-serif;
+    }
+    header { max-width: 1160px; margin: 0 auto 18px; }
+    .kicker {
+      margin: 0 0 4px;
+      color: var(--accent);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+    h1 { margin: 0; font-size: 23px; letter-spacing: -0.02em; }
+    .lede { margin: 5px 0 0; color: var(--muted); font-size: 12.5px; }
+    main {
+      display: flex;
+      align-items: flex-start;
+      gap: 24px;
+      max-width: 1160px;
+      margin: 0 auto;
+    }
+    .stage {
+      padding: 10px;
+      border: 1px solid #232a34;
+      border-radius: 16px;
+      background: #101319;
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.38);
+    }
+    #options-frame {
+      display: block;
+      width: 800px;
+      height: 860px;
+      border: 1px solid #303845;
+      border-radius: 10px;
+      background: #0b0d11;
+    }
+    aside {
+      flex: 1;
+      min-width: 260px;
+      max-width: 360px;
+      padding: 16px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: var(--panel);
+    }
+    aside h2 {
+      margin: 0 0 12px;
+      font-size: 12px;
+      font-weight: 650;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+      color: #b9c2d0;
+    }
+    dl {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 5px 12px;
+      margin: 0 0 14px;
+    }
+    dt { color: var(--muted); font-size: 11.5px; }
+    dd { margin: 0; color: var(--text); font-size: 11.5px; font-family: var(--mono); overflow-wrap: anywhere; }
+    .label {
+      margin: 14px 0 5px;
+      color: #6d7786;
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+    }
+    pre {
+      margin: 0;
+      padding: 9px 10px;
+      border: 1px solid #252c36;
+      border-radius: 8px;
+      background: #0e1116;
+      color: #aeb8c6;
+      font: 10.5px/1.5 var(--mono);
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+      max-height: 200px;
+      overflow: auto;
+    }
+    .check { margin: 5px 0; font-size: 11px; }
+    .check.pass { color: #83e9bd; }
+    .check.fail { color: #ff8391; }
+    .error-banner {
+      display: none;
+      margin-top: 12px;
+      padding: 9px 11px;
+      border: 1px solid rgba(139, 123, 255, 0.4);
+      border-radius: 8px;
+      background: rgba(139, 123, 255, 0.08);
+      color: #ffb3bd;
+      font-size: 11.5px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <p class="kicker">Developer harness</p>
+    <h1>Settings page under test</h1>
+    <p class="lede">The real <code>options.html</code>, <code>options.css</code>, and <code>options.js</code> running with a mocked <code>chrome.storage</code> and <code>chrome.action</code> surface.</p>
+    <div id="error-banner" class="error-banner"></div>
+  </header>
+
+  <main>
+    <div class="stage">
+      <iframe id="options-frame" title="Clipfox settings under test"></iframe>
+    </div>
+    <aside aria-label="Mock settings state">
+      <h2>Checks</h2>
+      <div id="checks"></div>
+      <p class="label">Mock chrome.storage.sync</p>
+      <pre id="mock-storage">{}</pre>
+      <p class="label">Per-tab badge values</p>
+      <pre id="mock-badges">{}</pre>
+      <p class="label">Save status</p>
+      <pre id="mock-status">-</pre>
+    </aside>
+  </main>
+
+  <script src="options-harness.js?v=1.4.0"></script>
+</body>
+</html>

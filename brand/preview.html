@@ -1,0 +1,73 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Clipfox brand preview</title>
+  <style>
+    :root { color-scheme: dark; }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 28px;
+      background:
+        radial-gradient(900px 420px at 88% -10%, rgba(139, 123, 255, 0.09), transparent 60%),
+        #0b0e14;
+      color: #f1f3f8;
+      font-family: "Segoe UI Variable Text", "Segoe UI", system-ui, sans-serif;
+    }
+    h1 { margin: 0 0 6px; font-size: 15px; font-weight: 600; letter-spacing: .02em; color: #c8cfdb; }
+    p.lede { margin: 0 0 24px; color: #8b96a9; font-size: 12px; }
+    h2 { margin: 0 0 14px; font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: #657185; }
+    .row { display: flex; align-items: flex-end; gap: 28px; flex-wrap: wrap; margin-bottom: 30px; }
+    .sample { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+    .sample span { font-size: 9px; color: #657185; }
+    .mark { display: block; }
+    .tile { display: grid; place-items: center; background: #121824; border: 1px solid #222b3a; border-radius: 24%; }
+    .light { background: #f4f5f8; padding: 18px; border-radius: 12px; }
+    .mono { background: #3a4659; padding: 18px; border-radius: 12px; }
+    .pixel { width: 128px; height: 128px; image-rendering: pixelated; }
+  </style>
+</head>
+<body>
+  <h1>Clipfox brand preview</h1>
+  <p class="lede">Final mark, wordmark variants, icon-scale checks, and lockups.</p>
+
+  <h2>Mark at icon sizes</h2>
+  <div class="row">
+    <div class="sample"><img class="mark" src="clipfox-mark.svg" width="16" height="16" alt=""><span>16</span></div>
+    <div class="sample"><img class="mark" src="clipfox-mark.svg" width="24" height="24" alt=""><span>24</span></div>
+    <div class="sample"><img class="mark" src="clipfox-mark.svg" width="32" height="32" alt=""><span>32</span></div>
+    <div class="sample"><img class="mark" src="clipfox-mark.svg" width="48" height="48" alt=""><span>48</span></div>
+    <div class="sample"><img class="mark" src="clipfox-mark.svg" width="96" height="96" alt=""><span>96</span></div>
+    <div class="sample"><img class="mark" src="clipfox-mark.svg" width="128" height="128" alt=""><span>128</span></div>
+  </div>
+
+  <h2>Surfaces</h2>
+  <div class="row">
+    <div class="sample"><div class="tile" style="width:128px;height:128px"><img src="clipfox-mark.svg" width="88" height="88" alt=""></div><span>app tile</span></div>
+    <div class="sample light"><img src="clipfox-mark.svg" width="64" height="64" alt=""><span style="color:#555">on light</span></div>
+    <div class="sample mono"><img src="clipfox-wordmark-mono.svg" width="112" alt="Clipfox"><span>mono wordmark</span></div>
+  </div>
+
+  <h2>Pixel grid checks</h2>
+  <div class="row">
+    <div class="sample"><img class="pixel" src="clipfox-mark.svg" width="16" height="16" alt=""><span>16 × 8 zoom</span></div>
+    <div class="sample"><img class="pixel" src="clipfox-mark.svg" width="32" height="32" alt=""><span>32 × 4 zoom</span></div>
+  </div>
+
+  <h2>Wordmark</h2>
+  <div class="row" style="align-items:center">
+    <div class="sample" style="align-items:flex-start"><img src="clipfox-wordmark.svg" width="224" alt="Clipfox"><span>224</span></div>
+    <div class="sample" style="align-items:flex-start"><img src="clipfox-wordmark.svg" width="112" alt="Clipfox"><span>112</span></div>
+    <div class="sample" style="align-items:flex-start"><img src="clipfox-wordmark.svg" width="56" alt="Clipfox"><span>56</span></div>
+    <div class="sample light" style="align-items:flex-start"><img src="clipfox-wordmark-light.svg" width="112" alt="Clipfox"><span style="color:#555">light background</span></div>
+  </div>
+
+  <h2>Lockups</h2>
+  <div class="row" style="align-items:center">
+    <div class="sample" style="flex-direction:row;gap:10px;align-items:center"><img src="clipfox-mark.svg" width="38" height="38" alt=""><img src="clipfox-wordmark.svg" width="112" alt="Clipfox"><span style="align-self:flex-end">dark</span></div>
+    <div class="sample light" style="flex-direction:row;gap:10px;align-items:center"><img src="clipfox-mark.svg" width="38" height="38" alt=""><img src="clipfox-wordmark-light.svg" width="112" alt="Clipfox"><span style="align-self:flex-end;color:#555">light</span></div>
+  </div>
+</body>
+</html>

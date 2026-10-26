@@ -1,0 +1,266 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Clipfox - Popup UI Harness</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #0b0e14;
+      --panel: #121824;
+      --border: #222b3a;
+      --text: #eef1f6;
+      --muted: #96a0af;
+      --accent: #8b7bff;
+      --green: #45d6a0;
+      --mono: ui-monospace, "Cascadia Mono", Consolas, monospace;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      padding: 26px 28px 40px;
+      background:
+        radial-gradient(1000px 500px at 85% -10%, rgba(139, 123, 255, 0.08), transparent 60%),
+        var(--bg);
+      color: var(--text);
+      font: 13px/1.55 "Segoe UI Variable Text", "Segoe UI", system-ui, sans-serif;
+    }
+    header { max-width: 1120px; margin: 0 auto 20px; }
+    .kicker {
+      margin: 0 0 4px;
+      color: var(--accent);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+    h1 { margin: 0; font-size: 23px; letter-spacing: -0.02em; }
+    .lede { margin: 5px 0 0; color: var(--muted); font-size: 12.5px; }
+    .scenarios {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 14px;
+    }
+    .scenarios a {
+      padding: 4px 9px;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      color: var(--muted);
+      font-size: 11px;
+      text-decoration: none;
+    }
+    .scenarios a:hover { border-color: #3a4659; color: var(--text); }
+    .scenarios a.active {
+      border-color: rgba(139, 123, 255, 0.42);
+      background: rgba(139, 123, 255, 0.1);
+      color: #c0b7ff;
+    }
+    main {
+      display: flex;
+      align-items: flex-start;
+      gap: 24px;
+      max-width: 1120px;
+      margin: 0 auto;
+    }
+    .stage {
+      padding: 12px;
+      border: 1px solid #232a34;
+      border-radius: 16px;
+      background: #101319;
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.38);
+    }
+    .frame-label {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      padding: 0 2px 9px;
+      color: #667181;
+      font-size: 10px;
+      font-family: var(--mono);
+    }
+    .frame-label::before {
+      content: "";
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--green);
+    }
+    #popup-frame {
+      display: block;
+      width: 400px;
+      height: 588px;
+      border: 1px solid #303845;
+      border-radius: 10px;
+      background: #0b0e14;
+    }
+    aside {
+      flex: 1;
+      min-width: 280px;
+      max-width: 520px;
+      padding: 16px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: var(--panel);
+    }
+    aside h2 {
+      margin: 0 0 12px;
+      font-size: 12px;
+      font-weight: 650;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+      color: #b9c2d0;
+    }
+    dl {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 5px 14px;
+      margin: 0 0 14px;
+    }
+    dt { color: var(--muted); font-size: 11.5px; }
+    dd { margin: 0; color: var(--text); font-size: 11.5px; font-family: var(--mono); overflow-wrap: anywhere; }
+    .label {
+      margin: 14px 0 5px;
+      color: #6d7786;
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+    }
+    pre {
+      margin: 0;
+      padding: 9px 10px;
+      border: 1px solid #252c36;
+      border-radius: 8px;
+      background: #0e1116;
+      color: #aeb8c6;
+      font: 10.5px/1.5 var(--mono);
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+      min-height: 34px;
+      max-height: 150px;
+      overflow: auto;
+    }
+    .harness-btn {
+      margin-top: 14px;
+      padding: 7px 11px;
+      border: 1px solid #333c49;
+      border-radius: 8px;
+      background: #1a1f27;
+      color: var(--text-soft, #c5ccd7);
+      font-size: 11.5px;
+      cursor: pointer;
+    }
+    .harness-btn:hover { background: #202630; }
+    .note {
+      margin: 12px 0 0;
+      color: #6c7685;
+      font-size: 10.5px;
+      line-height: 1.5;
+    }
+    code { font-family: var(--mono); font-size: 10.5px; color: #c7d0dd; }
+    #fixture-frame {
+      position: fixed;
+      left: -14000px;
+      top: 0;
+      width: 1100px;
+      height: 800px;
+      border: 0;
+    }
+    .error-banner {
+      display: none;
+      margin-top: 12px;
+      padding: 9px 11px;
+      border: 1px solid rgba(139, 123, 255, 0.4);
+      border-radius: 8px;
+      background: rgba(139, 123, 255, 0.08);
+      color: #ffb3bd;
+      font-size: 11.5px;
+    }
+    @media (max-width: 900px) {
+      main { flex-direction: column; }
+      aside { max-width: none; width: 100%; }
+    }
+    body.plain {
+      padding: 0;
+      background: #0b0e14;
+    }
+    body.plain header,
+    body.plain aside {
+      display: none;
+    }
+    body.plain main {
+      display: block;
+      max-width: none;
+      margin: 0;
+    }
+    body.plain .stage {
+      padding: 0;
+      border: 0;
+      border-radius: 0;
+      background: transparent;
+      box-shadow: none;
+    }
+    body.plain .frame-label {
+      display: none;
+    }
+    body.plain #popup-frame {
+      border: 0;
+      border-radius: 0;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <p class="kicker">Developer harness</p>
+    <h1>Popup UI under test</h1>
+    <p class="lede">The real <code>popup.html</code>, <code>popup.css</code>, <code>popup.js</code>, and <code>extractor.js</code> running inside an iframe with a mocked <code>chrome.*</code> API. Scanning uses a real fixture document.</p>
+    <nav class="scenarios" id="scenarios" aria-label="Harness scenarios"></nav>
+    <div id="error-banner" class="error-banner"></div>
+  </header>
+
+  <main>
+    <div class="stage">
+      <div class="frame-label">popup.html &middot; 400 &times; 588</div>
+      <iframe id="popup-frame" title="Clipfox popup under test"></iframe>
+    </div>
+
+    <aside aria-label="Mock extension state">
+      <h2>Mock state</h2>
+      <dl>
+        <dt>Scenario</dt><dd id="mock-scenario">-</dd>
+        <dt>Category</dt><dd id="mock-tab">-</dd>
+        <dt>Scan calls</dt><dd id="mock-scans">0</dd>
+        <dt>Watch probes</dt><dd id="mock-probes">0</dd>
+        <dt>Copied items</dt><dd id="mock-copies">0</dd>
+        <dt>Opened URLs</dt><dd id="mock-opens">0</dd>
+        <dt>Badge text</dt><dd id="mock-badge">-</dd>
+        <dt>Badge colour</dt><dd id="mock-badge-color">-</dd>
+        <dt>Options opened</dt><dd id="mock-options">0</dd>
+        <dt>Downloads</dt><dd id="mock-downloads">0</dd>
+        <dt>Harness ready</dt><dd id="mock-ready">no</dd>
+      </dl>
+
+      <p class="label">Clipboard writes (one entry per Copy action)</p>
+      <pre id="mock-copied">[]</pre>
+
+      <p class="label">chrome.tabs.create calls</p>
+      <pre id="mock-opened">[]</pre>
+
+      <p class="label">Exported files</p>
+      <pre id="mock-exports">[]</pre>
+
+      <p class="label">Mock chrome.storage.sync</p>
+      <pre id="mock-storage">{}</pre>
+
+      <button id="update-btn" class="harness-btn" type="button">Simulate page reload</button>
+      <p class="note">The reload button fires the mocked <code>tabs.onUpdated</code> listener, which should mark the scan as stale. Clipboard, badge, storage, export, and options calls are all recorded above.</p>
+    </aside>
+  </main>
+
+  <iframe id="fixture-frame" title="Scan fixture"></iframe>
+  <script src="ui-harness.js?v=1.4.0"></script>
+</body>
+</html>

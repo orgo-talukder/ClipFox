@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Find and extract YouTube links from any webpage.">
+  <meta name="theme-color" content="#0b0e14">
+  <title>Clipfox settings</title>
+  <link rel="icon" href="icons/icon32.png">
+  <link rel="preload" href="fonts/SpaceGrotesk-Variable.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="options.css">
+</head>
+<body>
+  <div class="page">
+    <header class="hero">
+      <div class="brand-lockup">
+        <img class="brand-mark" src="brand/clipfox-mark.svg" width="44" height="44" alt="">
+        <div class="brand-copy">
+          <img class="brand-wordmark" src="brand/clipfox-wordmark.svg" width="132" height="37" alt="Clipfox">
+          <p class="kicker">YouTube Link Extractor</p>
+        </div>
+      </div>
+      <span class="version" id="version">v1.4.0</span>
+      <div class="hero-copy">
+        <h1>Settings</h1>
+        <p class="lede">Find the links. Clip the clutter. Choose how Clipfox copies links, watches player changes, and reports counts in your toolbar.</p>
+      </div>
+    </header>
+
+    <main class="settings">
+      <section class="card" aria-labelledby="copy-heading">
+        <div class="card-head">
+          <div>
+            <h2 id="copy-heading">Copy format</h2>
+            <p>Used by <strong>Copy all</strong>, <strong>Copy N</strong>, and <strong>Export</strong>. Per-card copy always copies that card's URL.</p>
+          </div>
+          <span class="tag">Output</span>
+        </div>
+        <div class="field">
+          <label for="copy-format">Default format</label>
+          <select id="copy-format" class="select">
+            <option value="urls">URLs — one per line</option>
+            <option value="title-url">Title + URL — readable list</option>
+            <option value="markdown">Markdown — linked list</option>
+            <option value="csv">CSV — spreadsheet ready</option>
+            <option value="json">JSON — structured data</option>
+            <option value="ids">Video IDs — one per line</option>
+          </select>
+        </div>
+        <p class="hint" id="format-hint">Plain URLs, one per line. Video IDs mode skips playlists and channels.</p>
+      </section>
+
+      <section class="card" aria-labelledby="watch-heading">
+        <div class="card-head">
+          <div>
+            <h2 id="watch-heading">Watching</h2>
+            <p>Watch mode checks the embedded player every few seconds while the popup is open and refreshes the results when the player changes.</p>
+          </div>
+          <span class="tag tag-green">Live</span>
+        </div>
+        <label class="switch-row" for="auto-watch">
+          <span class="switch-copy">
+            <span class="switch-title">Start Watch automatically</span>
+            <span class="switch-note">Turns on after a successful scan. You can still stop it with the Watch button.</span>
+          </span>
+          <input id="auto-watch" class="switch-input" type="checkbox">
+          <span class="switch-ui" aria-hidden="true"></span>
+        </label>
+      </section>
+
+      <section class="card" aria-labelledby="badge-heading">
+        <div class="card-head">
+          <div>
+            <h2 id="badge-heading">Toolbar badge</h2>
+            <p>The badge shows how many YouTube links were found on the last scanned tab. It clears when that tab navigates or closes.</p>
+          </div>
+          <span class="tag">Icon</span>
+        </div>
+        <label class="switch-row" for="show-badge">
+          <span class="switch-copy">
+            <span class="switch-title">Show link count on the toolbar icon</span>
+            <span class="switch-note">Turning this off clears badges from open tabs.</span>
+          </span>
+          <input id="show-badge" class="switch-input" type="checkbox">
+          <span class="switch-ui" aria-hidden="true"></span>
+        </label>
+      </section>
+
+      <section class="card shortcut" aria-labelledby="shortcut-heading">
+        <div>
+          <h2 id="shortcut-heading">Keyboard shortcut</h2>
+          <p>Open the popup with <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>Y</kbd> (or <kbd>Command</kbd> + <kbd>Shift</kbd> + <kbd>Y</kbd> on macOS). Change it on your browser's extension shortcuts page.</p>
+        </div>
+      </section>
+
+      <section class="card privacy" aria-labelledby="privacy-heading">
+        <div class="card-head">
+          <div>
+            <h2 id="privacy-heading">Privacy</h2>
+            <p>Clipfox is deliberately boring about data: it stays inside your browser.</p>
+          </div>
+          <span class="tag tag-blue">Local</span>
+        </div>
+        <ul class="privacy-list">
+          <li>No network requests, analytics, or remote code.</li>
+          <li>No host permissions. A page is read only after you press <strong>Scan this page</strong>.</li>
+          <li>Settings use <code>chrome.storage.sync</code>, so your browser account may sync them like other extension preferences.</li>
+          <li>Clipfox never downloads videos, touches cookies, or bypasses private or unlisted access.</li>
+        </ul>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <button id="reset-btn" class="btn btn-secondary" type="button">Reset to defaults</button>
+      <span id="save-status" class="save-status" role="status" aria-live="polite">Saved</span>
+    </footer>
+  </div>
+
+  <script src="options.js" defer></script>
+</body>
+</html>

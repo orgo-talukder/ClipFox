@@ -1,0 +1,100 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Clipfox - Extraction Tests</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #0b0e14;
+      --surface: #121824;
+      --border: #222b3a;
+      --text: #eef1f6;
+      --muted: #98a2b1;
+      --green: #45d6a0;
+      --red: #ff6b7b;
+      --amber: #f0b45a;
+      --mono: ui-monospace, "Cascadia Mono", Consolas, monospace;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 40px 24px 64px;
+      background:
+        radial-gradient(900px 420px at 90% -10%, rgba(139, 123, 255, 0.09), transparent 60%),
+        var(--bg);
+      color: var(--text);
+      font: 14px/1.55 "Segoe UI Variable Text", "Segoe UI", system-ui, sans-serif;
+    }
+    main { max-width: 880px; margin: 0 auto; }
+    h1 { margin: 0; font-size: 26px; letter-spacing: -0.02em; }
+    .lede { margin: 6px 0 24px; color: var(--muted); max-width: 700px; }
+    code { font-family: var(--mono); font-size: 12px; background: #1b2028; border: 1px solid #262c36; padding: 1px 5px; border-radius: 5px; }
+    .summary {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 14px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: var(--surface);
+      font-weight: 600;
+      font-size: 14px;
+    }
+    .summary::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--amber);
+    }
+    .summary.pass { border-color: rgba(61, 220, 151, 0.28); }
+    .summary.pass::before { background: var(--green); }
+    .summary.fail { border-color: rgba(255, 91, 112, 0.32); }
+    .summary.fail::before { background: var(--red); }
+    #run-meta { margin: 8px 0 22px; color: #626c7b; font-size: 12px; font-variant-numeric: tabular-nums; }
+    .test-list { list-style: none; display: flex; flex-direction: column; gap: 9px; margin: 0; padding: 0; }
+    .test {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 13px 14px;
+      border: 1px solid var(--border);
+      border-radius: 11px;
+      background: var(--surface);
+    }
+    .test.pass { border-color: rgba(61, 220, 151, 0.16); }
+    .test.fail { border-color: rgba(255, 91, 112, 0.34); background: rgba(255, 91, 112, 0.035); }
+    .badge {
+      flex: none;
+      margin-top: 1px;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 9px;
+      font-weight: 800;
+      letter-spacing: 0.07em;
+    }
+    .test.pass .badge { color: var(--green); background: rgba(61, 220, 151, 0.1); }
+    .test.fail .badge { color: var(--red); background: rgba(255, 91, 112, 0.12); }
+    .test-body { min-width: 0; }
+    .test h2 { margin: 0 0 3px; font-size: 13.5px; font-weight: 600; letter-spacing: -0.005em; }
+    .test p { margin: 0; color: var(--muted); font-size: 12px; overflow-wrap: anywhere; }
+    .test.fail p { color: #ffb3bd; font-family: var(--mono); font-size: 11.5px; }
+    .hint { margin-top: 28px; color: #626c7b; font-size: 12px; }
+    .hint code { font-size: 11px; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Extraction tests</h1>
+    <p class="lede">These tests run the real <code>extractor.js</code> against the fixture pages in this folder. No extension APIs are required, so this page can validate the scanning logic in any Chromium browser.</p>
+    <div id="summary" class="summary">Running tests...</div>
+    <div id="run-meta"></div>
+    <ol id="test-list" class="test-list"></ol>
+    <p class="hint">If the fixtures fail to load, serve the project with <code>python -m http.server 8123</code> and open <code>http://localhost:8123/tests/test-runner.html</code>.</p>
+  </main>
+  <script src="../extractor.js?v=1.4.0"></script>
+  <script src="test-runner.js?v=1.4.0"></script>
+</body>
+</html>

@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>YouTube Link Test Fixtures</title>
+  <meta property="og:title" content="Fixture article: the best videos">
+  <meta property="og:video" content="https://www.youtube.com/embed/MetaVideo01">
+  <meta property="og:video:secure_url" content="https://www.youtube-nocookie.com/embed/MetaVideo02">
+  <link rel="canonical" href="https://www.youtube.com/watch?v=Canonical01">
+  <link rel="preconnect" href="https://www.youtube.com">
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "VideoObject",
+      "name": "Structured video title",
+      "embedUrl": "https://www.youtube.com/embed/Structured1",
+      "description": "Test fixture for structured metadata extraction."
+    }
+  </script>
+  <style>
+    :root { color-scheme: dark; }
+    body {
+      margin: 0;
+      padding: 32px;
+      background: #12151b;
+      color: #e7ebf2;
+      font: 15px/1.6 "Segoe UI", system-ui, sans-serif;
+    }
+    main { max-width: 880px; margin: 0 auto; }
+    h1 { margin: 0 0 6px; font-size: 28px; letter-spacing: -0.02em; }
+    h2 { margin: 28px 0 8px; font-size: 17px; color: #ff9aa7; }
+    p, li { color: #b9c1cd; }
+    .lede { color: #8f99a8; margin-top: 0; }
+    a { color: #7fb3ff; }
+    code { color: #c7d0dd; background: #1b2028; padding: 1px 5px; border-radius: 5px; }
+    section { border-top: 1px solid #262c36; padding-top: 4px; }
+    iframe { width: 280px; height: 158px; border: 1px solid #303744; border-radius: 8px; background: #0b0d11; }
+    .expected { display: inline-block; margin-top: 14px; padding: 6px 10px; border: 1px solid #2c3440; border-radius: 7px; color: #8f99a8; font-size: 12px; }
+    img { width: 16px; height: 16px; }
+  </style>
+</head>
+<body id="top">
+  <main>
+    <h1>YouTube Link Test Fixtures</h1>
+    <p class="lede">A single page containing every shape the extractor must recognize, plus duplicates and links that must be ignored.</p>
+    <p class="expected">Expected: 21 unique links — 12 videos, 1 Short, 1 live, 3 playlists, 4 channels.</p>
+
+    <section>
+      <h2>Videos and duplicates</h2>
+      <ul>
+        <li><a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ">Never Gonna Give You Up (official video)</a></li>
+        <li><a href="https://youtu.be/dQw4w9WgXcQ?t=42">The same video through a shortened URL</a></li>
+        <li><a href="https://www.youtube.com/watch?v=WithParams1&amp;feature=share&amp;t=30">Video with query parameters</a></li>
+        <li><a href="https://www.youtube.com/redirect?q=https%3A%2F%2Fyoutu.be%2FRedirect123">Wrapped in a YouTube redirect</a></li>
+        <li><a href="https://www.youtube.com/watch?app=desktop&amp;v=EncodedID01&amp;list=PLshouldnotwin">Encoded parameters</a></li>
+        <li><a href="//youtu.be/ProtoRel001">Protocol-relative URL</a></li>
+        <li><a href="https://www.youtube.com/watch?v=ImgTitle001"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==" alt="Image-only link title"> </a></li>
+      </ul>
+
+      <p>An iframe can duplicate a link already on the page:</p>
+      <iframe src="about:blank" data-src="https://www.youtube.com/embed/dQw4w9WgXcQ" title="Embedded duplicate player" loading="lazy"></iframe>
+    </section>
+
+    <section>
+      <h2>Shorts, live streams, and embeds</h2>
+      <ul>
+        <li><a href="https://www.youtube.com/shorts/aBcDeFgHiJk"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==" alt="Thumbnail for the test Short"></a></li>
+        <li><a href="https://www.youtube.com/live/LiveStream1" aria-label="Community live stream">Watch</a></li>
+        <li><a href="https://www.youtube.com/shorts/aBcDeFgHiJk?feature=share">The same Short, with a share parameter</a></li>
+        <li><a href="https://www.youtube.com/watch?v=aBcDeFgHiJk">The same Short as a normal watch URL</a></li>
+      </ul>
+      <iframe src="about:blank" data-src="https://www.youtube-nocookie.com/embed/Privacy1234" title="Privacy-enhanced player" loading="lazy"></iframe>
+    </section>
+
+    <section>
+      <h2>Playlists</h2>
+      <ul>
+        <li><a href="https://www.youtube.com/playlist?list=PL1234567890abcdef">Best playlist</a></li>
+        <li><a href="https://youtube.com/playlist?list=PL1234567890abcdef&amp;si=tracking">Duplicate playlist with tracking parameters</a></li>
+        <li><a href="https://www.youtube.com/watch?list=PL9988776655443322&amp;si=abc">Playlist without a video</a></li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>Channels</h2>
+      <ul>
+        <li><a href="https://www.youtube.com/@GoogleDevelopers">Google Developers on YouTube</a></li>
+        <li><a href="https://www.youtube.com/channel/UC_x5XG1OV2P6uZZ5FSM9Ttw">Google Developers channel ID</a></li>
+        <li><a href="https://www.youtube.com/c/SomeCreator">A /c/ channel</a></li>
+        <li><a href="https://www.youtube.com/user/oldschoolcreator">A legacy /user/ channel</a></li>
+        <li><a href="https://www.youtube.com/@googledevelopers">The same handle in different casing</a></li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>Metadata and visible text</h2>
+      <p>Article mentions <code>https://youtu.be/PlainText01</code>. It also references <code>https://www.youtube.com/playlist?list=PLtextplaylist123</code>. The same video appears here again: <code>https://www.youtube.com/watch?v=dQw4w9WgXcQ</code>.</p>
+      <p>Structured data (JSON-LD) and Open Graph video tags are in the page head.</p>
+    </section>
+
+    <section>
+      <h2>Malformed links that must be ignored</h2>
+      <ul>
+        <li><a href="https://www.youtube.com/watch?v=">Watch with no video ID</a></li>
+        <li><a href="https://youtu.be/">Short URL with no video ID</a></li>
+        <li><a href="https://www.youtube.com/watch?v=tooShort">Video ID that is too short</a></li>
+        <li><a href="javascript:alert('https://youtu.be/Injected01')">JavaScript pseudo-link</a></li>
+        <li><a href="https://www.youtube.com/channel/">Channel with no ID</a></li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>Non-YouTube links that must be ignored</h2>
+      <ul>
+        <li><a href="https://notyoutube.com/watch?v=dQw4w9WgXcQ">notyoutube.com</a></li>
+        <li><a href="https://youtube.com.evil.example/watch?v=dQw4w9WgXcQ">youtube.com.evil.example</a></li>
+        <li><a href="https://evil.example/youtube.com/watch?v=dQw4w9WgXcQ">A path that contains youtube.com</a></li>
+        <li><a href="https://www.youtube.com@evil.example/watch?v=dQw4w9WgXcQ">A userinfo trick</a></li>
+        <li><a href="https://vimeo.com/123456789">Vimeo</a></li>
+        <li><a href="https://example.com/?next=https%3A%2F%2Fyoutu.be%2FdQw4w9WgXcQ">An unrelated redirect</a></li>
+      </ul>
+    </section>
+
+    <p><a href="#top">Back to top</a> · <a href="https://example.com/">Example</a></p>
+  </main>
+</body>
+</html>
